@@ -16,7 +16,7 @@
   <DeviceModel>0</DeviceModel>
   <Template>
 
-&lt;XtraReportsLayoutSerializer SerializerVersion="16.2.3.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v16.2, Version=16.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="BaseReport" ScriptsSource="private void ReplaceDecimalSeparator(object sender, DevExpress.XtraReports.UI.PrintOnPageEventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;   XRLabel label = ((XRLabel)sender);&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;   label.Text = label.Text.Replace(&amp;quot;,&amp;quot;, &amp;quot;.&amp;quot;);&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;private void tableCell_HC_BeforePrint(object sender, System.Drawing.Printing.PrintEventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;XRTableCell cell = ((XRTableCell)sender);&amp;#xD;&amp;#xA;&amp;#x9;if (cell.Text.Trim() != &amp;quot;&amp;quot;)&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;cell.Text = &amp;quot;*&amp;quot;;&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;" SnapGridSize="15.875" ReportUnit="TenthsOfAMillimeter" Margins="153, 98, 99, 53" PaperKind="A4" PageWidth="2100" PageHeight="2970" Version="16.2" RequestParameters="false" DataMember="ArchiveParent" DataSource="#Ref-0" Dpi="254" Font="Microsoft Sans Serif, 8.25pt" Tag_type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="9|28676"&gt;
+&lt;XtraReportsLayoutSerializer SerializerVersion="16.2.3.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v16.2, Version=16.2.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="BaseReport" ScriptsSource="private void tableCell_HC_BeforePrint(object sender, System.Drawing.Printing.PrintEventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;XRTableCell cell = ((XRTableCell)sender);&amp;#xD;&amp;#xA;&amp;#x9;if (cell.Text.Trim() != &amp;quot;&amp;quot;)&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;cell.Text = &amp;quot;*&amp;quot;;&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;" SnapGridSize="15.875" ReportUnit="TenthsOfAMillimeter" Margins="153, 98, 99, 53" PaperKind="A4" PageWidth="2100" PageHeight="2970" Version="16.2" RequestParameters="false" DataMember="ArchiveParent" DataSource="#Ref-0" Dpi="254" Font="Microsoft Sans Serif, 8.25pt" Tag_type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="9|28676"&gt;
   &lt;FormattingRuleSheet&gt;
     &lt;Item1 Ref="2" Name="HourFormat" DataMember="Потребление" Condition="[Parameters.DATA_TYPE] == 128"&gt;
       &lt;Formatting Ref="3" BorderStyle="Inset" StringFormat="Near;Near;0;None;Character;Default" /&gt;
@@ -171,7 +171,7 @@
                 &lt;Item9 Ref="94" ControlType="XRTableCell" Name="tableCell_Mg_" Weight="0.054900851564124081" CanShrink="true" Text="tableCell_Mg_" TextAlignment="MiddleRight" Dpi="254" Font="Microsoft Sans Serif, 8.25pt" Padding="0,3,0,0,254" BorderColor="Black" Borders="Right, Bottom" BorderDashStyle="Solid"&gt;
                   &lt;Scripts Ref="95" OnPrintOnPage="ReplaceDecimalSeparator" /&gt;
                   &lt;DataBindings&gt;
-                    &lt;Item1 Ref="96" FormatString="{0:F2}" PropertyName="Text" DataMember="ArchiveParent.Потребление.Теплоснабжение Точка учета1 (Потребление).M" /&gt;
+                    &lt;Item1 Ref="96" FormatString="{0:F2}" PropertyName="Text" DataMember="ArchiveParent.Потребление.ГВС Точка учета1 (Потребление).M" /&gt;
                   &lt;/DataBindings&gt;
                   &lt;StylePriority Ref="97" UseFont="false" UsePadding="false" UseBorderColor="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" /&gt;
                 &lt;/Item9&gt;
@@ -395,7 +395,7 @@
                 &lt;Item9 Ref="226" ControlType="XRTableCell" Name="tableCell_Mg_sum" Weight="0.18099739602646761" TextAlignment="MiddleRight" Dpi="254" Font="Microsoft Sans Serif, 8pt, charSet=204" Padding="0,3,0,0,254" BorderColor="Black" Borders="Right, Bottom"&gt;
                   &lt;Summary Ref="227" FormatString="{0:F2}" Running="Report" IgnoreNullValues="true" /&gt;
                   &lt;DataBindings&gt;
-                    &lt;Item1 Ref="228" PropertyName="Text" DataMember="ArchiveParent.Потребление.Теплоснабжение Точка учета1 (Потребление).M" /&gt;
+                    &lt;Item1 Ref="228" PropertyName="Text" DataMember="ArchiveParent.Потребление.ГВС Точка учета1 (Потребление).M" /&gt;
                   &lt;/DataBindings&gt;
                   &lt;StylePriority Ref="229" UseFont="false" UsePadding="false" UseTextAlignment="false" /&gt;
                 &lt;/Item9&gt;
