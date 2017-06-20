@@ -4,7 +4,7 @@
   <BuildNumber>32219</BuildNumber>
   <Type>1</Type>
   <Entity>2</Entity>
-  <DataSourceMask>TotalsStartEnd, Node, NodeMeasurePoints, NodeConsumption</DataSourceMask>
+  <DataSourceMask>28676</DataSourceMask>
   <MeasurePointCountHeat>1</MeasurePointCountHeat>
   <MeasurePointCountHotWater>1</MeasurePointCountHotWater>
   <MeasurePointCountColdWater>0</MeasurePointCountColdWater>
