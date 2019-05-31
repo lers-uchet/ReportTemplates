@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Report>
-  <Version>3.07 R27 alpha 4</Version>
-  <BuildNumber>32712</BuildNumber>
+  <Version>3.30.2</Version>
+  <BuildNumber>33009</BuildNumber>
   <Type>1</Type>
   <Entity>1</Entity>
   <DataSourceMask>MeasurePoint, Day, NodeAttribute, Node, MeasurePointAttribute</DataSourceMask>
@@ -15,12 +15,13 @@
   <EstimationAlgorithm>0</EstimationAlgorithm>
   <DailyAverageCalculatingPeriod>0</DailyAverageCalculatingPeriod>
   <DeviceModel>0</DeviceModel>
+  <ReportUnits>0</ReportUnits>
   <Template>
 
-&lt;XtraReportsLayoutSerializer SerializerVersion="18.1.4.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v18.1, Version=18.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="BaseReport" ScriptsSource="using Lers.Reports;&amp;#xD;&amp;#xA;/*&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;Предполагается:&amp;#xD;&amp;#xA; 1. В свойствах объекта учета, которому принадлежит точка учета, задано значение атрибута используемое в отчете.&amp;#xD;&amp;#xA; 2. В свойствах точки учета, задано значение атрибута используемое.&amp;#xD;&amp;#xA; 3. В свойствах точки учета заданы часовые договорные нагрузки по расходу воды и тепловой энергии.&amp;#xD;&amp;#xA; &amp;#xD;&amp;#xA;В качестве примера расчета процента отклонения Q и M от измеренных рассматривается два способа использования значений договорных нагрузок.&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;Переменная contractHeatValue используется непосредственно в обработчике calculatedFieldHeatPercent_GetValue() для расчета процента отклонения тепловой энергии.&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;Переменная contractFlowValue используется в обработчике calculatedFieldContractFlow_GetValue() &amp;#xD;&amp;#xA;как возвращаемое значение вычисляемого поля calculatedFieldContractFlow. &amp;#xD;&amp;#xA;Формула расчета процента отклонения по расходу воды задается в выражении вычисляемого поля calculatedFieldFlowPercent, &amp;#xD;&amp;#xA;в котором используется calculatedFieldContractFlow.&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;*/&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Значение пользовательского атрибута объекта учета, используемое в вычисляемом поле calculatedFieldNodeAttribute. &amp;#xD;&amp;#xA;private string nodeAttributeValue = &amp;quot;&amp;quot;;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Значение пользовательского атрибута точки учета, используемое в вычисляемом поле calculatedFieldMeasurePointAttribute. &amp;#xD;&amp;#xA;private string measurePointAttributeValue = &amp;quot;&amp;quot;;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Значение часовой договорной нагрузки по тепловой энергии, используемое в обработчике calculatedFieldHeatPercent_GetValue()&amp;#xD;&amp;#xA;private double? contractHeatValue = null;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Значение часовой договорной нагрузки по расходу воды, используемое в обработчике calculatedFieldContractFlow_GetValue(). &amp;#xD;&amp;#xA;private double? contractFlowValue = null;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Температура холодной воды заданная в свойствах объекта учета&amp;#xD;&amp;#xA;double coldWateTemp = 0;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;private void BaseReport_DataSourceDemanded(object sender, System.EventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;// Получаем значение температуры холодной воды и сохраняем в переменную coldWateTemp&amp;#xD;&amp;#xA;&amp;#x9;// Это значение будет результатом вычисляемого поля ColdWaterTemp созданного в узле 'Архивы потреблений и интеграторов'&amp;#xD;&amp;#xA;&amp;#x9;string bindingValue = Convert.ToString(DataSourceUtils.GetBindedValue(labelTxb));&amp;#xD;&amp;#xA;&amp;#x9;double.TryParse(bindingValue, out coldWateTemp);&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;&amp;#x9;// Элемет управления labelCustomAttribute связан с пользовательским атрибутом объекта учета&amp;#xD;&amp;#xA;&amp;#x9;// Если его не надо отображать, то можно скрыть, задав свойство Видимость = Нет.&amp;#xD;&amp;#xA;&amp;#x9;// Сохраняем значение атрибута в переменную для последующего использования в обработчике calculatedFieldNodeAttribute_GetValue().&amp;#xD;&amp;#xA;&amp;#x9;this.nodeAttributeValue = DataSourceUtils.GetBindedValue(labelNodeAttribute) as string;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;&amp;#x9;// Элемет управления labelCustomAttribute связан с пользовательским атрибутом объекта учета&amp;#xD;&amp;#xA;&amp;#x9;// Если его не надо отображать, то можно скрыть, задав свойство Видимость = Нет.&amp;#xD;&amp;#xA;&amp;#x9;// Сохраняем значение атрибута в переменную для последующего использования в обработчике calculatedFieldMeasurePointAttribute_GetValue().&amp;#xD;&amp;#xA;&amp;#x9;this.measurePointAttributeValue = DataSourceUtils.GetBindedValue(labelMeasurePointAttribute) as string;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;&amp;#x9;// Элемет управления labelContractHeat связан с полем 'Параметры точки учета.ContractHeat'&amp;#xD;&amp;#xA;&amp;#x9;// Сохраняем значение договорной нагрузки по тепловой энергии в переменную &amp;#xD;&amp;#xA;&amp;#x9;// для последующего использования в вычисляемом поле calculatedFieldHeatPercent.&amp;#xD;&amp;#xA;&amp;#x9;// Возвращаемое значение для calculatedFieldHeatPercent задается в обработчике calculatedFieldHeatPercent_GetValue()&amp;#xD;&amp;#xA;&amp;#x9;contractHeatValue = DataSourceUtils.GetBindedValue(labelContractHeat) as double?;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;&amp;#x9;// Элемет управления labelContractFlow связан с полем 'Параметры точки учета.ContractFlow'&amp;#xD;&amp;#xA;&amp;#x9;// Сохраняем значение договорной нагрузки по расходу воды в переменную&amp;#xD;&amp;#xA;&amp;#x9;// для последующего использования в вычисляемом поле calculatedFieldContractFlow.&amp;#xD;&amp;#xA;&amp;#x9;// calculatedFieldContractFlow, в свою очередь, используется в выражении для вычисляемого поля calculatedFieldFlowPercent&amp;#xD;&amp;#xA;&amp;#x9;contractFlowValue = DataSourceUtils.GetBindedValue(labelContractFlow) as double?;&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Возвращает значение вычисляемого поля ColdWaterTemp&amp;#xD;&amp;#xA;private void ColdWaterTemp_GetValue(object sender, DevExpress.XtraReports.UI.GetValueEventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;e.Value = coldWateTemp;&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Возвращает значение вычисляемого поля в зависимости от значения атрибута объекта учета.&amp;#xD;&amp;#xA;// Вычисляемое поле находится в узле 'Архивы потреблений и интеграторов'.&amp;#xD;&amp;#xA;private void calculatedFieldNodeAttribute_GetValue(object sender, DevExpress.XtraReports.UI.GetValueEventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;if (string.IsNullOrEmpty(this.nodeAttributeValue))&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;e.Value = null;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;&amp;#x9;else if (this.nodeAttributeValue == &amp;quot;12345&amp;quot;) // '12345' - значение пользователского атрибута заданное в объекте учета&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;e.Value = 2;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;&amp;#x9;else&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;e.Value = &amp;quot;Не найден&amp;quot;;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Возвращает значение вычисляемого поля в зависимости от значения атрибута точки учета.&amp;#xD;&amp;#xA;// Вычисляемое поле находится в узле 'Архивы потреблений и интеграторов'.&amp;#xD;&amp;#xA;private void calculatedFieldMeasurePointAttribute_GetValue(object sender, DevExpress.XtraReports.UI.GetValueEventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;if (string.IsNullOrEmpty(this.measurePointAttributeValue))&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;e.Value = null;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;&amp;#x9;else if (this.measurePointAttributeValue == &amp;quot;2509&amp;quot;) // '2509' - значение пользователского атрибута заданное в точке учета&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;e.Value = 22;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;&amp;#x9;else&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;e.Value = &amp;quot;Не найден&amp;quot;;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Возвращает процент отклонения от договорной нагрузки по тепловой энергии&amp;#xD;&amp;#xA;// Вычисляемое поле calculatedFieldHeatPercent находится в узле 'Архивы потреблений и интеграторов'.&amp;#xD;&amp;#xA;private void calculatedFieldHeatPercent_GetValue(object sender, DevExpress.XtraReports.UI.GetValueEventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;double? q = GetCurrentColumnValue(&amp;quot;Q&amp;quot;) as double?;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;&amp;#x9;e.Value = (q - this.contractHeatValue * 24) * 100 / q;&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Возвращает значение часовой договорной нагрузки по расходу воды.&amp;#xD;&amp;#xA;// Вычисляемое поле находится в узле 'Архивы потреблений и интеграторов' &amp;#xD;&amp;#xA;// и используется в выражении для вычисляемого поля calculatedFieldFlowPercent,&amp;#xD;&amp;#xA;// которое тоже находится в узле 'Архивы потреблений и интеграторов'&amp;#xD;&amp;#xA;private void calculatedFieldContractFlow_GetValue(object sender, DevExpress.XtraReports.UI.GetValueEventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;e.Value = this.contractFlowValue;&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;" Margins="50, 10, 48, 48" PaperKind="A4" PageWidth="827" PageHeight="1169" Version="18.1" RequestParameters="false" DataMember="Архив суточный" DataSource="#Ref-0"&gt;
+&lt;XtraReportsLayoutSerializer SerializerVersion="19.1.3.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="BaseReport" ScriptsSource="using Lers.Reports;&amp;#xD;&amp;#xA;/*&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;Предполагается:&amp;#xD;&amp;#xA; 1. В свойствах объекта учета, которому принадлежит точка учета, задано значение атрибута используемое в отчете (связано с labelNodeAttribute).&amp;#xD;&amp;#xA; 2. В свойствах точки учета, задано значение атрибута используемое в отчете (связано с labelMeasurePointAttribute).&amp;#xD;&amp;#xA; 3. В свойствах точки учета заданы часовые договорные нагрузки по расходу воды и тепловой энергии.&amp;#xD;&amp;#xA; &amp;#xD;&amp;#xA;В качестве примера расчета процента отклонения Q и M от измеренных рассматривается два способа использования значений договорных нагрузок.&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;Переменная contractHeatValue используется непосредственно в обработчике calculatedFieldHeatPercent_GetValue() для расчета процента отклонения тепловой энергии.&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;Переменная contractFlowValue используется в обработчике calculatedFieldContractFlow_GetValue() &amp;#xD;&amp;#xA;как возвращаемое значение вычисляемого поля calculatedFieldContractFlow. &amp;#xD;&amp;#xA;Формула расчета процента отклонения по расходу воды задается в выражении вычисляемого поля calculatedFieldFlowPercent, &amp;#xD;&amp;#xA;в котором используется calculatedFieldContractFlow.&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;*/&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Значение пользовательского атрибута объекта учета, используемое в вычисляемом поле calculatedFieldNodeAttribute. &amp;#xD;&amp;#xA;private string nodeAttributeValue = &amp;quot;&amp;quot;;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Значение пользовательского атрибута точки учета, используемое в вычисляемом поле calculatedFieldMeasurePointAttribute. &amp;#xD;&amp;#xA;private string measurePointAttributeValue = &amp;quot;&amp;quot;;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Значение часовой договорной нагрузки по тепловой энергии, используемое в обработчике calculatedFieldHeatPercent_GetValue()&amp;#xD;&amp;#xA;private double? contractHeatValue = null;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Значение часовой договорной нагрузки по расходу воды, используемое в обработчике calculatedFieldContractFlow_GetValue(). &amp;#xD;&amp;#xA;private double? contractFlowValue = null;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Температура холодной воды заданная в свойствах объекта учета&amp;#xD;&amp;#xA;double coldWateTemp = 0;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;private void BaseReport_DataSourceDemanded(object sender, System.EventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;// Получаем значение температуры холодной воды и сохраняем в переменную coldWateTemp&amp;#xD;&amp;#xA;&amp;#x9;// Это значение будет результатом вычисляемого поля ColdWaterTemp созданного в узле 'Архивы потреблений и интеграторов'&amp;#xD;&amp;#xA;&amp;#x9;string bindingValue = Convert.ToString(DataSourceUtils.GetBindedValue(labelTxb));&amp;#xD;&amp;#xA;&amp;#x9;double.TryParse(bindingValue, out coldWateTemp);&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;&amp;#x9;// Элемет управления labelCustomAttribute связан с пользовательским атрибутом объекта учета&amp;#xD;&amp;#xA;&amp;#x9;// Если его не надо отображать, то можно скрыть, задав свойство Видимость = Нет.&amp;#xD;&amp;#xA;&amp;#x9;// Сохраняем значение атрибута в переменную для последующего использования в обработчике calculatedFieldNodeAttribute_GetValue().&amp;#xD;&amp;#xA;&amp;#x9;this.nodeAttributeValue = DataSourceUtils.GetBindedValue(labelNodeAttribute) as string;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;&amp;#x9;// Элемет управления labelCustomAttribute связан с пользовательским атрибутом объекта учета&amp;#xD;&amp;#xA;&amp;#x9;// Если его не надо отображать, то можно скрыть, задав свойство Видимость = Нет.&amp;#xD;&amp;#xA;&amp;#x9;// Сохраняем значение атрибута в переменную для последующего использования в обработчике calculatedFieldMeasurePointAttribute_GetValue().&amp;#xD;&amp;#xA;&amp;#x9;this.measurePointAttributeValue = DataSourceUtils.GetBindedValue(labelMeasurePointAttribute) as string;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;&amp;#x9;double bindedValue = 0;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;&amp;#x9;// Элемет управления labelContractHeat связан с полем 'Параметры точки учета.ContractHeat'&amp;#xD;&amp;#xA;&amp;#x9;// Сохраняем значение договорной нагрузки по тепловой энергии в переменную &amp;#xD;&amp;#xA;&amp;#x9;// для последующего использования в вычисляемом поле calculatedFieldHeatPercent.&amp;#xD;&amp;#xA;&amp;#x9;// Возвращаемое значение для calculatedFieldHeatPercent задается в обработчике calculatedFieldHeatPercent_GetValue()&amp;#xD;&amp;#xA;      if (double.TryParse(Convert.ToString(DataSourceUtils.GetBindedValue(labelContractHeat)), out bindedValue))&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;this.contractHeatValue = bindedValue;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;&amp;#x9;// Элемет управления labelContractFlow связан с полем 'Параметры точки учета.ContractFlow'&amp;#xD;&amp;#xA;&amp;#x9;// Сохраняем значение договорной нагрузки по расходу воды в переменную&amp;#xD;&amp;#xA;&amp;#x9;// для последующего использования в вычисляемом поле calculatedFieldContractFlow.&amp;#xD;&amp;#xA;&amp;#x9;// calculatedFieldContractFlow, в свою очередь, используется в выражении для вычисляемого поля calculatedFieldFlowPercent&amp;#xD;&amp;#xA;      if (double.TryParse(Convert.ToString(DataSourceUtils.GetBindedValue(labelContractFlow)), out bindedValue))&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;this.contractFlowValue = bindedValue;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Возвращает значение вычисляемого поля ColdWaterTemp&amp;#xD;&amp;#xA;private void ColdWaterTemp_GetValue(object sender, DevExpress.XtraReports.UI.GetValueEventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;e.Value = coldWateTemp;&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Возвращает значение вычисляемого поля в зависимости от значения атрибута объекта учета.&amp;#xD;&amp;#xA;// Вычисляемое поле находится в узле 'Архивы потреблений и интеграторов'.&amp;#xD;&amp;#xA;private void calculatedFieldNodeAttribute_GetValue(object sender, DevExpress.XtraReports.UI.GetValueEventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;if (string.IsNullOrEmpty(this.nodeAttributeValue))&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;e.Value = null;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;&amp;#x9;else if (this.nodeAttributeValue == &amp;quot;12345&amp;quot;) // '12345' - значение пользователского атрибута заданное в объекте учета&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;e.Value = 2;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;&amp;#x9;else&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;e.Value = &amp;quot;Не найден&amp;quot;;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Возвращает значение вычисляемого поля в зависимости от значения атрибута точки учета.&amp;#xD;&amp;#xA;// Вычисляемое поле находится в узле 'Архивы потреблений и интеграторов'.&amp;#xD;&amp;#xA;private void calculatedFieldMeasurePointAttribute_GetValue(object sender, DevExpress.XtraReports.UI.GetValueEventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;if (string.IsNullOrEmpty(this.measurePointAttributeValue))&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;e.Value = null;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;&amp;#x9;else if (this.measurePointAttributeValue == &amp;quot;2509&amp;quot;) // '2509' - значение пользователского атрибута заданное в точке учета&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;e.Value = 22;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;&amp;#x9;else&amp;#xD;&amp;#xA;&amp;#x9;{&amp;#xD;&amp;#xA;&amp;#x9;&amp;#x9;e.Value = &amp;quot;Не найден&amp;quot;;&amp;#xD;&amp;#xA;&amp;#x9;}&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Возвращает процент отклонения от договорной нагрузки по тепловой энергии&amp;#xD;&amp;#xA;// Вычисляемое поле calculatedFieldHeatPercent находится в узле 'Архивы потреблений и интеграторов'.&amp;#xD;&amp;#xA;private void calculatedFieldHeatPercent_GetValue(object sender, DevExpress.XtraReports.UI.GetValueEventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;double? q = GetCurrentColumnValue(&amp;quot;Q&amp;quot;) as double?;&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;&amp;#x9;e.Value = (q - this.contractHeatValue * 24) * 100 / q;&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;&amp;#xD;&amp;#xA;// Возвращает значение часовой договорной нагрузки по расходу воды.&amp;#xD;&amp;#xA;// Вычисляемое поле находится в узле 'Архивы потреблений и интеграторов' &amp;#xD;&amp;#xA;// и используется в выражении для вычисляемого поля calculatedFieldFlowPercent,&amp;#xD;&amp;#xA;// которое тоже находится в узле 'Архивы потреблений и интеграторов'&amp;#xD;&amp;#xA;private void calculatedFieldContractFlow_GetValue(object sender, DevExpress.XtraReports.UI.GetValueEventArgs e) &amp;#xD;&amp;#xA;{&amp;#xD;&amp;#xA;&amp;#x9;e.Value = this.contractFlowValue;&amp;#xD;&amp;#xA;}&amp;#xD;&amp;#xA;" Margins="50, 10, 48, 48" PaperKind="A4" PageWidth="827" PageHeight="1169" Version="19.1" RequestParameters="false" DataMember="Архив суточный" DataSource="#Ref-0"&gt;
   &lt;Parameters&gt;
-    &lt;Item1 Ref="3" Description="Дата начала отчетного периода" ValueInfo="2018-10-05" Name="DATE_START" Type="#Ref-2" /&gt;
-    &lt;Item2 Ref="4" Description="Дата окончания отчетного периода" ValueInfo="2018-10-05" Name="DATE_END" Type="#Ref-2" /&gt;
+    &lt;Item1 Ref="3" Description="Дата начала отчетного периода" ValueInfo="2019-05-31" Name="DATE_START" Type="#Ref-2" /&gt;
+    &lt;Item2 Ref="4" Description="Дата окончания отчетного периода" ValueInfo="2019-05-31" Name="DATE_END" Type="#Ref-2" /&gt;
     &lt;Item3 Ref="6" Description="Идентификатор учетной записи" ValueInfo="0" Name="ACCOUNT_ID" Type="#Ref-5" /&gt;
     &lt;Item4 Ref="7" Description="Тип данных, по которым формируется отчет." ValueInfo="0" Name="DATA_TYPE" Type="#Ref-5" /&gt;
     &lt;Item5 Ref="9" Description="Параметр отчета задаваемый пользователем при формировании отчета." Name="USER_PARAMETER" /&gt;
@@ -45,7 +46,7 @@
     &lt;/Item6&gt;
   &lt;/CalculatedFields&gt;
   &lt;Bands&gt;
-    &lt;Item1 Ref="22" ControlType="ReportHeaderBand" Name="ReportHeader" HeightF="338.625" Tag_type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="32025"&gt;
+    &lt;Item1 Ref="22" ControlType="ReportHeaderBand" Name="ReportHeader" HeightF="338.625" Tag_type="System.Int32" Tag="32025"&gt;
       &lt;Controls&gt;
         &lt;Item1 Ref="23" ControlType="XRLabel" Name="labelTxb" TextFormatString="{0:F2}" Multiline="true" Text="labelTxb" TextAlignment="MiddleLeft" SizeF="152.083252,23" LocationFloat="535.144653, 305.625" Font="Arial, 11.25pt, charSet=204" Padding="2,2,0,0,100"&gt;
           &lt;DataBindings&gt;
@@ -119,11 +120,11 @@
     &lt;/Item1&gt;
     &lt;Item2 Ref="62" ControlType="PageHeaderBand" Name="PageHeader" HeightF="40"&gt;
       &lt;Controls&gt;
-        &lt;Item1 Ref="63" ControlType="XRTable" Name="tablePageHeader" SizeF="751.0418,40" LocationFloat="0, 0" BorderWidth="1" Tag_type="System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="~Xtra#Base64AAEAAAD/////AQAAAAAAAAAEAQAAAH9TeXN0ZW0uQ29sbGVjdGlvbnMuR2VuZXJpYy5MaXN0YDFbW1N5c3RlbS5TdHJpbmcsIG1zY29ybGliLCBWZXJzaW9uPTQuMC4wLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjc3YTVjNTYxOTM0ZTA4OV1dAwAAAAZfaXRlbXMFX3NpemUIX3ZlcnNpb24GAAAICAkCAAAABAAAAAUAAAARAgAAAAQAAAAGAwAAAAFUBgQAAAABTQYFAAAAAVEGBgAAAAFXCw=="&gt;
+        &lt;Item1 Ref="63" ControlType="XRTable" Name="tablePageHeader" SizeF="751.0418,40" LocationFloat="0, 0" BorderWidth="1"&gt;
           &lt;Rows&gt;
             &lt;Item1 Ref="64" ControlType="XRTableRow" Name="rowPageHeader1" Weight="0.33333333333333331"&gt;
               &lt;Cells&gt;
-                &lt;Item1 Ref="65" ControlType="XRTableCell" Name="tableCell23" Weight="564.68572208100863" TextAlignment="MiddleCenter" Borders="All" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item1 Ref="65" ControlType="XRTableCell" Name="tableCell23" Weight="564.68572208100863" TextAlignment="MiddleCenter" Borders="All" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="66" FormatString="{0}" PropertyName="Text" DataMember="Параметры точки учета.FullTitle" /&gt;
                   &lt;/DataBindings&gt;
@@ -133,34 +134,34 @@
             &lt;/Item1&gt;
             &lt;Item2 Ref="68" ControlType="XRTableRow" Name="rowPageHeader2" Weight="0.33333333333333331"&gt;
               &lt;Cells&gt;
-                &lt;Item1 Ref="69" ControlType="XRTableCell" Name="tableCell9" Weight="15.055753450061921" Text="Дата" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Left, Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="0"&gt;
+                &lt;Item1 Ref="69" ControlType="XRTableCell" Name="tableCell9" Weight="15.055753450061921" Text="Дата" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Left, Right, Bottom" Tag_type="System.Byte" Tag="0"&gt;
                   &lt;StylePriority Ref="70" UseFont="false" UseTextAlignment="false" /&gt;
                 &lt;/Item1&gt;
-                &lt;Item2 Ref="71" ControlType="XRTableCell" Name="T1_1_1" Weight="12.544246549938078" Text="T1,°C" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item2 Ref="71" ControlType="XRTableCell" Name="T1_1_1" Weight="12.544246549938078" Text="T1,°C" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;StylePriority Ref="72" UseFont="false" /&gt;
                 &lt;/Item2&gt;
-                &lt;Item3 Ref="73" ControlType="XRTableCell" Name="T2_1_1" Weight="15.6" Text="T2,°C" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item3 Ref="73" ControlType="XRTableCell" Name="T2_1_1" Weight="15.6" Text="T2,°C" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;StylePriority Ref="74" UseFont="false" /&gt;
                 &lt;/Item3&gt;
-                &lt;Item4 Ref="75" ControlType="XRTableCell" Name="M1_1_1" Weight="15.6" Text="M1, т" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item4 Ref="75" ControlType="XRTableCell" Name="M1_1_1" Weight="15.6" Text="M1, т" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;StylePriority Ref="76" UseFont="false" /&gt;
                 &lt;/Item4&gt;
-                &lt;Item5 Ref="77" ControlType="XRTableCell" Name="M2_1_1" Weight="15.6" Text="M2, т" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item5 Ref="77" ControlType="XRTableCell" Name="M2_1_1" Weight="15.6" Text="M2, т" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;StylePriority Ref="78" UseFont="false" /&gt;
                 &lt;/Item5&gt;
-                &lt;Item6 Ref="79" ControlType="XRTableCell" Name="Mdelta_1_1" Weight="15.6" Text="∆M, т" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item6 Ref="79" ControlType="XRTableCell" Name="Mdelta_1_1" Weight="15.6" Text="∆M, т" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;StylePriority Ref="80" UseFont="false" /&gt;
                 &lt;/Item6&gt;
-                &lt;Item7 Ref="81" ControlType="XRTableCell" Name="Q1_1_1" Weight="15.6" Text="Q1, Гкал" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item7 Ref="81" ControlType="XRTableCell" Name="Q1_1_1" Weight="15.6" Text="Q1, Гкал" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;StylePriority Ref="82" UseFont="false" /&gt;
                 &lt;/Item7&gt;
-                &lt;Item8 Ref="83" ControlType="XRTableCell" Name="Q2_1_1" Weight="15.6" Text="Q2, Гкал" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item8 Ref="83" ControlType="XRTableCell" Name="Q2_1_1" Weight="15.6" Text="Q2, Гкал" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;StylePriority Ref="84" UseFont="false" /&gt;
                 &lt;/Item8&gt;
-                &lt;Item9 Ref="85" ControlType="XRTableCell" Name="Qdelta_1_1" Weight="15.6" Text="∆Q, Гкал" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item9 Ref="85" ControlType="XRTableCell" Name="Qdelta_1_1" Weight="15.6" Text="∆Q, Гкал" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;StylePriority Ref="86" UseFont="false" /&gt;
                 &lt;/Item9&gt;
-                &lt;Item10 Ref="87" ControlType="XRTableCell" Name="W_1_1" Weight="15.6" Text="Нараб., ч" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item10 Ref="87" ControlType="XRTableCell" Name="W_1_1" Weight="15.6" Text="Нараб., ч" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;StylePriority Ref="88" UseFont="false" /&gt;
                 &lt;/Item10&gt;
                 &lt;Item11 Ref="89" ControlType="XRTableCell" Name="tableCell29" Weight="15.6" Text="% ∆Q" TextAlignment="MiddleCenter" Font="Times New Roman, 9.75pt, style=Bold, charSet=204" Borders="Right, Bottom"&gt;
@@ -181,52 +182,52 @@
           &lt;Rows&gt;
             &lt;Item1 Ref="95" ControlType="XRTableRow" Name="rowDetail" Weight="1.3529411764705883"&gt;
               &lt;Cells&gt;
-                &lt;Item1 Ref="96" ControlType="XRTableCell" Name="tableCell14" Weight="15.055753450061921" TextAlignment="MiddleCenter" Borders="Left, Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="0"&gt;
+                &lt;Item1 Ref="96" ControlType="XRTableCell" Name="tableCell14" Weight="15.055753450061921" TextAlignment="MiddleCenter" Borders="Left, Right, Bottom" Tag_type="System.Byte" Tag="0"&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="97" FormatString="{0:dd.MM.yy}" PropertyName="Text" DataMember="Архив суточный.DataDate" /&gt;
                   &lt;/DataBindings&gt;
                 &lt;/Item1&gt;
-                &lt;Item2 Ref="98" ControlType="XRTableCell" Name="tableCell3" Weight="12.544246549938078" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item2 Ref="98" ControlType="XRTableCell" Name="tableCell3" Weight="12.544246549938078" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="99" FormatString="{0:F1}" PropertyName="Text" DataMember="Архив суточный.T1" /&gt;
                   &lt;/DataBindings&gt;
                 &lt;/Item2&gt;
-                &lt;Item3 Ref="100" ControlType="XRTableCell" Name="tableCell22" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item3 Ref="100" ControlType="XRTableCell" Name="tableCell22" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="101" FormatString="{0:F1}" PropertyName="Text" DataMember="Архив суточный.T2" /&gt;
                   &lt;/DataBindings&gt;
                 &lt;/Item3&gt;
-                &lt;Item4 Ref="102" ControlType="XRTableCell" Name="tableCell19" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item4 Ref="102" ControlType="XRTableCell" Name="tableCell19" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="103" FormatString="{0:F3}" PropertyName="Text" DataMember="Архив суточный.M1" /&gt;
                   &lt;/DataBindings&gt;
                 &lt;/Item4&gt;
-                &lt;Item5 Ref="104" ControlType="XRTableCell" Name="tableCell20" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item5 Ref="104" ControlType="XRTableCell" Name="tableCell20" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="105" FormatString="{0:F3}" PropertyName="Text" DataMember="Архив суточный.M2" /&gt;
                   &lt;/DataBindings&gt;
                 &lt;/Item5&gt;
-                &lt;Item6 Ref="106" ControlType="XRTableCell" Name="tableCell6" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item6 Ref="106" ControlType="XRTableCell" Name="tableCell6" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="107" FormatString="{0:F3}" PropertyName="Text" DataMember="Архив суточный.M" /&gt;
                   &lt;/DataBindings&gt;
                 &lt;/Item6&gt;
-                &lt;Item7 Ref="108" ControlType="XRTableCell" Name="tableCell8" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item7 Ref="108" ControlType="XRTableCell" Name="tableCell8" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="109" FormatString="{0:F3}" PropertyName="Text" DataMember="Архив суточный.Q1" /&gt;
                   &lt;/DataBindings&gt;
                 &lt;/Item7&gt;
-                &lt;Item8 Ref="110" ControlType="XRTableCell" Name="tableCell10" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item8 Ref="110" ControlType="XRTableCell" Name="tableCell10" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="111" FormatString="{0:F3}" PropertyName="Text" DataMember="Архив суточный.Q2" /&gt;
                   &lt;/DataBindings&gt;
                 &lt;/Item8&gt;
-                &lt;Item9 Ref="112" ControlType="XRTableCell" Name="tableCell13" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item9 Ref="112" ControlType="XRTableCell" Name="tableCell13" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="113" FormatString="{0:F3}" PropertyName="Text" DataMember="Архив суточный.Q" /&gt;
                   &lt;/DataBindings&gt;
                 &lt;/Item9&gt;
-                &lt;Item10 Ref="114" ControlType="XRTableCell" Name="tableCell16" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item10 Ref="114" ControlType="XRTableCell" Name="tableCell16" Weight="15.6" TextAlignment="MiddleRight" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="115" FormatString="{0:F2}" PropertyName="Text" DataMember="Архив суточный.WorkTime" /&gt;
                   &lt;/DataBindings&gt;
@@ -255,66 +256,66 @@
           &lt;Rows&gt;
             &lt;Item1 Ref="124" ControlType="XRTableRow" Name="rowFooter" Weight="1.3529411764705883"&gt;
               &lt;Cells&gt;
-                &lt;Item1 Ref="125" ControlType="XRTableCell" Name="tableCell4" Weight="15.055756318641791" Text="Итого" TextAlignment="MiddleCenter" Font="Arial, 9pt, style=Bold, charSet=204" Borders="Left, Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="0"&gt;
+                &lt;Item1 Ref="125" ControlType="XRTableCell" Name="tableCell4" Weight="15.055756318641791" Text="Итого" TextAlignment="MiddleCenter" Font="Arial, 9pt, style=Bold, charSet=204" Borders="Left, Right, Bottom" Tag_type="System.Byte" Tag="0"&gt;
                   &lt;StylePriority Ref="126" UseFont="false" /&gt;
                 &lt;/Item1&gt;
-                &lt;Item2 Ref="127" ControlType="XRTableCell" Name="tableCell11" Weight="12.544243681358209" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item2 Ref="127" ControlType="XRTableCell" Name="tableCell11" Weight="12.544243681358209" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;Summary Ref="128" FormatString="{0:F1}" Running="Report" Func="Avg" IgnoreNullValues="true" /&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="129" FormatString="{0:F1}" PropertyName="Text" DataMember="Архив суточный.T1" /&gt;
                   &lt;/DataBindings&gt;
                   &lt;StylePriority Ref="130" UseFont="false" /&gt;
                 &lt;/Item2&gt;
-                &lt;Item3 Ref="131" ControlType="XRTableCell" Name="tableCell12" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item3 Ref="131" ControlType="XRTableCell" Name="tableCell12" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;Summary Ref="132" FormatString="{0:F1}" Running="Report" Func="Avg" IgnoreNullValues="true" /&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="133" FormatString="{0:F1}" PropertyName="Text" DataMember="Архив суточный.T2" /&gt;
                   &lt;/DataBindings&gt;
                   &lt;StylePriority Ref="134" UseFont="false" /&gt;
                 &lt;/Item3&gt;
-                &lt;Item4 Ref="135" ControlType="XRTableCell" Name="tableCell7" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item4 Ref="135" ControlType="XRTableCell" Name="tableCell7" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;Summary Ref="136" FormatString="{0:F3}" Running="Report" /&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="137" FormatString="{0:F3}" PropertyName="Text" DataMember="Архив суточный.M1" /&gt;
                   &lt;/DataBindings&gt;
                   &lt;StylePriority Ref="138" UseFont="false" /&gt;
                 &lt;/Item4&gt;
-                &lt;Item5 Ref="139" ControlType="XRTableCell" Name="tableCell1" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item5 Ref="139" ControlType="XRTableCell" Name="tableCell1" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;Summary Ref="140" FormatString="{0:F3}" Running="Report" /&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="141" FormatString="{0:F3}" PropertyName="Text" DataMember="Архив суточный.M2" /&gt;
                   &lt;/DataBindings&gt;
                   &lt;StylePriority Ref="142" UseFont="false" /&gt;
                 &lt;/Item5&gt;
-                &lt;Item6 Ref="143" ControlType="XRTableCell" Name="tableCell2" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item6 Ref="143" ControlType="XRTableCell" Name="tableCell2" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;Summary Ref="144" FormatString="{0:F3}" Running="Report" /&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="145" FormatString="{0:F3}" PropertyName="Text" DataMember="Архив суточный.M" /&gt;
                   &lt;/DataBindings&gt;
                   &lt;StylePriority Ref="146" UseFont="false" /&gt;
                 &lt;/Item6&gt;
-                &lt;Item7 Ref="147" ControlType="XRTableCell" Name="tableCell25" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item7 Ref="147" ControlType="XRTableCell" Name="tableCell25" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;Summary Ref="148" FormatString="{0:F3}" Running="Report" /&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="149" FormatString="{0:F3}" PropertyName="Text" DataMember="Архив суточный.Q1" /&gt;
                   &lt;/DataBindings&gt;
                   &lt;StylePriority Ref="150" UseFont="false" /&gt;
                 &lt;/Item7&gt;
-                &lt;Item8 Ref="151" ControlType="XRTableCell" Name="tableCell24" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item8 Ref="151" ControlType="XRTableCell" Name="tableCell24" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;Summary Ref="152" FormatString="{0:F3}" Running="Report" /&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="153" FormatString="{0:F3}" PropertyName="Text" DataMember="Архив суточный.Q2" /&gt;
                   &lt;/DataBindings&gt;
                   &lt;StylePriority Ref="154" UseFont="false" /&gt;
                 &lt;/Item8&gt;
-                &lt;Item9 Ref="155" ControlType="XRTableCell" Name="tableCell5" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item9 Ref="155" ControlType="XRTableCell" Name="tableCell5" Weight="15.6" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;Summary Ref="156" FormatString="{0:F3}" Running="Report" /&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="157" FormatString="{0:F3}" PropertyName="Text" DataMember="Архив суточный.Q" /&gt;
                   &lt;/DataBindings&gt;
                   &lt;StylePriority Ref="158" UseFont="false" /&gt;
                 &lt;/Item9&gt;
-                &lt;Item10 Ref="159" ControlType="XRTableCell" Name="tableCell18" Weight="15.60004049899019" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Tag="1"&gt;
+                &lt;Item10 Ref="159" ControlType="XRTableCell" Name="tableCell18" Weight="15.60004049899019" TextAlignment="MiddleRight" Font="Arial, 9pt, style=Bold, charSet=204" Padding="0,2,0,0,100" Borders="Right, Bottom" Tag_type="System.Byte" Tag="1"&gt;
                   &lt;Summary Ref="160" FormatString="{0:F2}" Running="Report" /&gt;
                   &lt;DataBindings&gt;
                     &lt;Item1 Ref="161" FormatString="{0:F2}" PropertyName="Text" DataMember="Архив суточный.WorkTime" /&gt;
@@ -346,9 +347,9 @@
   &lt;/Bands&gt;
   &lt;Scripts Ref="173" OnDataSourceDemanded="BaseReport_DataSourceDemanded" /&gt;
   &lt;ObjectStorage&gt;
-    &lt;Item1 ObjectType="DevExpress.XtraReports.Serialization.ObjectStorageInfo, DevExpress.XtraReports.v18.1" Ref="2" Content="System.DateTime" Type="System.Type" /&gt;
-    &lt;Item2 ObjectType="DevExpress.XtraReports.Serialization.ObjectStorageInfo, DevExpress.XtraReports.v18.1" Ref="5" Content="System.Int32" Type="System.Type" /&gt;
-    &lt;Item3 ObjectType="DevExpress.XtraReports.Serialization.ObjectStorageInfo, DevExpress.XtraReports.v18.1" Ref="0" Content="~Xtra#NULL" Type="Lers.Reports.ReportDataSet" /&gt;
+    &lt;Item1 ObjectType="DevExpress.XtraReports.Serialization.ObjectStorageInfo, DevExpress.XtraReports.v19.1" Ref="2" Content="System.DateTime" Type="System.Type" /&gt;
+    &lt;Item2 ObjectType="DevExpress.XtraReports.Serialization.ObjectStorageInfo, DevExpress.XtraReports.v19.1" Ref="5" Content="System.Int32" Type="System.Type" /&gt;
+    &lt;Item3 ObjectType="DevExpress.XtraReports.Serialization.ObjectStorageInfo, DevExpress.XtraReports.v19.1" Ref="0" Content="~Xtra#NULL" Type="Lers.Reports.ReportDataSet" /&gt;
   &lt;/ObjectStorage&gt;
 &lt;/XtraReportsLayoutSerializer&gt;</Template>
 </Report>
