@@ -36,7 +36,7 @@
     &lt;Item1 Ref="12" Name="deltaM_Start" Expression="[M1_Start] - [M2_Start]" DataMember="Показания.Теплоснабжение Точка учета1 (Показания)" /&gt;
     &lt;Item2 Ref="13" Name="deltaM_End" Expression="[M1_End] - [M2_End]" DataMember="Показания.Теплоснабжение Точка учета1 (Показания)" /&gt;
     &lt;Item3 Ref="14" Name="deltaM_fin" Expression="[M1_Delta]-[M2_Delta]" DataMember="Показания.Теплоснабжение Точка учета1 (Показания)" /&gt;
-    &lt;Item4 Ref="15" Name="NS" FieldType="String" Expression="Iif(IsNull([Потребление].[Теплоснабжение Точка учета1 (Потребление)].[DeviceErrorCodes]),''  , '*')" DataMember="ArchiveParent" /&gt;
+    &lt;Item4 Ref="15" Name="NS" FieldType="String" Expression="Iif(IsNullOrEmpty([Потребление].[Теплоснабжение Точка учета1 (Потребление)].[DeviceErrorCodes]),''  , '*')" DataMember="ArchiveParent" /&gt;
     &lt;Item5 Ref="16" Name="CounterType" Expression="Iif(IsNull([ГВС Точка учета1 (Точки учета).HeatMeterTitle]), [Теплоснабжение Точка учета1 (Точки учета).HeatMeterTitle],[ГВС Точка учета1 (Точки учета).HeatMeterTitle])" DataMember="Точки учета" /&gt;
     &lt;Item6 Ref="17" Name="M1maxHour" Expression="[M1max]/24" DataMember="Точки учета.Теплоснабжение Точка учета1 (Точки учета).Теплоснабжение Точка учета1 (Диапазоны измерений)" /&gt;
     &lt;Item7 Ref="18" Name="M1minHour" Expression="[M1min]/24" DataMember="Точки учета.Теплоснабжение Точка учета1 (Точки учета).Теплоснабжение Точка учета1 (Диапазоны измерений)" /&gt;
