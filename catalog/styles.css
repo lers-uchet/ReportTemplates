@@ -1,0 +1,17 @@
+﻿body {
+	font-family: sans-serif;
+}
+
+#titleCaption {
+	text-align: center;
+	background-color:lightgray
+}
+table {
+    border-collapse: collapse; 
+    border:1px solid #69899F;
+} 
+
+td {
+  padding: 10px;
+  padding-left: 20px;
+}
